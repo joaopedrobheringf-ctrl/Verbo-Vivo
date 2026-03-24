@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verbo Vivo</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #FAF8F4;
+    --ink: #1A1814;
+    --ink-soft: #4A4640;
+    --ink-muted: #9A948A;
+    --gold: #B8935A;
+    --gold-light: #E8D5B0;
+    --gold-pale: #F5EDD8;
+    --border: #E8E2D8;
+    --serif: 'Cormorant Garamond', Georgia, serif;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--cream);
+    color: var(--ink);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ─── Layout principal ─── */
+  .app {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 0 24px 32px;
+    position: relative;
+  }
+
+  /* ─── Cabeçalho ─── */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 0 0;
+  }
+
+  .logo {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--ink);
+  }
+
+  .logo span {
+    color: var(--gold);
+  }
+
+  .date-chip {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--ink-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: var(--gold-pale);
+    border: 1px solid var(--gold-light);
+    border-radius: 20px;
+    padding: 5px 12px;
+  }
+
+  /* ─── Decoração da seção ─── */
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 32px;
+  }
+
+  .section-label::before, .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .section-label span {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    white-space: nowrap;
+  }
+
+  /* ─── Card do versículo ─── */
+  .verse-card {
+    margin-top: 20px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px 28px 28px;
+    position: relative;
+    overflow: hidden;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .verse-card::before {
+    content: '\201C';
+    position: absolute;
+    top: -10px;
+    left: 20px;
+    font-family: var(--serif);
+    font-size: 120px;
+    color: var(--gold-pale);
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .verse-theme-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--gold-pale);
+    border: 1px solid var(--gold-light);
+    color: var(--gold);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+  }
+
+  .verse-theme-badge::before {
+    content: '✦';
+    font-size: 8px;
+  }
+
+  .verse-text {
+    font-family: var(--serif);
+    font-size: 26px;
+    font-weight: 300;
+    font-style: italic;
+    line-height: 1.5;
+    color: var(--ink);
+    position: relative;
+    z-index: 1;
+  }
+
+  .verse-ref {
+    display: block;
+    margin-top: 16px;
+    font-family: var(--serif);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gold);
+    letter-spacing: 0.04em;
+  }
+
+  /* ─── Ações do versículo ─── */
+  .verse-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+
+  .action-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--ink-muted);
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .action-icon:hover {
+    border-color: var(--gold-light);
+    background: var(--gold-pale);
+    color: var(--gold);
+  }
+
+  .action-icon.active {
+    border-color: var(--gold);
+    background: var(--gold-pale);
+    color: var(--gold);
+  }
+
+  .spacer { flex: 1; }
+
+  /* ─── Botão principal ─── */
+  .btn-pray {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--ink);
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 20px;
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-pray:hover {
+    background: var(--gold);
+    transform: translateY(-1px);
+  }
+
+  /* ─── Busca por tema ─── */
+  .theme-section {
+    margin-top: 28px;
+    animation: fadeUp 0.6s 0.15s ease both;
+  }
+
+  .theme-title {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 12px;
+  }
+
+  .theme-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .theme-chip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 8px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: #fff;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    gap: 5px;
+  }
+
+  .theme-chip:hover, .theme-chip.selected {
+    border-color: var(--gold);
+    background: var(--gold-pale);
+    color: var(--ink);
+  }
+
+  .theme-chip .icon { font-size: 14px; }
+
+  /* ─── Botão Pastor IA ─── */
+  .pastor-banner {
+    margin-top: 28px;
+    background: var(--ink);
+    border-radius: 20px;
+    padding: 20px 22px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    animation: fadeUp 0.6s 0.25s ease both;
+  }
+
+  .pastor-banner:hover { transform: translateY(-2px); }
+
+  .pastor-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .pastor-info { flex: 1; }
+
+  .pastor-info h3 {
+    font-family: var(--serif);
+    font-size: 17px;
+    font-weight: 400;
+    color: #fff;
+    margin-bottom: 2px;
+  }
+
+  .pastor-info p {
+    font-size: 12px;
+    color: rgba(255,255,255,0.5);
+    line-height: 1.4;
+  }
+
+  .pastor-arrow {
+    color: var(--gold);
+    font-size: 20px;
+  }
+
+  /* ─── Nav inferior ─── */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 420px;
+    background: rgba(250, 248, 244, 0.92);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 10px 0 18px;
+  }
+
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
+    padding: 4px 16px;
+    border-radius: 12px;
+    transition: all 0.2s;
+  }
+
+  .nav-item .nav-icon { font-size: 20px; }
+
+  .nav-item .nav-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--ink-muted);
+  }
+
+  .nav-item.active .nav-label { color: var(--gold); }
+  .nav-item.active .nav-icon { filter: none; }
+
+  /* ─── Toast de favorito ─── */
+  .toast {
+    position: fixed;
+    bottom: 90px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--ink);
+    color: #fff;
+    font-size: 13px;
+    padding: 10px 20px;
+    border-radius: 50px;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    z-index: 100;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* ─── Modal de oração ─── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(26, 24, 20, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 200;
+    display: flex;
+    align-items: flex-end;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .modal-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .modal {
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+    background: var(--cream);
+    border-radius: 24px 24px 0 0;
+    padding: 28px 24px 40px;
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  .modal-overlay.open .modal {
+    transform: translateY(0);
+  }
+
+  .modal-handle {
+    width: 36px;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin: 0 auto 24px;
+  }
+
+  .modal h2 {
+    font-family: var(--serif);
+    font-size: 24px;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .modal .verse-mini {
+    font-size: 13px;
+    color: var(--ink-muted);
+    line-height: 1.5;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .prayer-text {
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 300;
+    font-style: italic;
+    line-height: 1.8;
+    color: var(--ink);
+    min-height: 120px;
+  }
+
+  .btn-amen {
+    width: 100%;
+    margin-top: 28px;
+    background: var(--gold);
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 16px;
+    font-family: var(--serif);
+    font-size: 18px;
+    font-style: italic;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-amen:hover { background: var(--ink); }
+
+  /* ─── Animações ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── Espaço para a nav ─── */
+  .nav-spacer { height: 80px; }
+
+  /* ─── Tela do Pastor IA ─── */
+  .pastor-screen {
+    position: fixed;
+    inset: 0;
+    background: var(--cream);
+    z-index: 300;
+    display: flex;
+    flex-direction: column;
+    max-width: 420px;
+    margin: 0 auto;
+    transform: translateX(100%);
+    transition: transform 0.38s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  .pastor-screen.open {
+    transform: translateX(0);
+  }
+
+  .pastor-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    background: #fff;
+    flex-shrink: 0;
+  }
+
+  .btn-back {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: var(--ink-soft);
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .btn-back:hover { background: var(--gold-pale); border-color: var(--gold-light); }
+
+  .pastor-header-info { flex: 1; }
+  .pastor-header-info h2 {
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+  .pastor-header-info p {
+    font-size: 11px;
+    color: var(--ink-muted);
+    margin-top: 1px;
+  }
+
+  .pastor-header-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  /* ─── Mensagens ─── */
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    scroll-behavior: smooth;
+  }
+
+  .msg {
+    display: flex;
+    flex-direction: column;
+    max-width: 85%;
+    animation: fadeUp 0.3s ease both;
+  }
+
+  .msg.pastor { align-self: flex-start; }
+  .msg.user   { align-self: flex-end; }
+
+  .msg-bubble {
+    padding: 12px 16px;
+    border-radius: 18px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .msg.pastor .msg-bubble {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-bottom-left-radius: 4px;
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 16px;
+    font-style: italic;
+  }
+
+  .msg.user .msg-bubble {
+    background: var(--ink);
+    color: #fff;
+    border-bottom-right-radius: 4px;
+    font-family: var(--sans);
+  }
+
+  .msg-name {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 4px;
+    padding-left: 4px;
+  }
+
+  .msg.user .msg-name { text-align: right; padding-right: 4px; }
+
+  /* Digitando... */
+  .typing-indicator {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 14px 18px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    border-bottom-left-radius: 4px;
+    width: fit-content;
+  }
+
+  .typing-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--ink-muted);
+    animation: typingBounce 1.2s ease infinite;
+  }
+
+  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes typingBounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+    30% { transform: translateY(-6px); opacity: 1; }
+  }
+
+  /* ─── Sugestões rápidas ─── */
+  .suggestions {
+    display: flex;
+    gap: 8px;
+    padding: 0 16px 10px;
+    overflow-x: auto;
+    flex-shrink: 0;
+    scrollbar-width: none;
+  }
+  .suggestions::-webkit-scrollbar { display: none; }
+
+  .suggestion-chip {
+    white-space: nowrap;
+    padding: 7px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: #fff;
+    font-size: 12px;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .suggestion-chip:hover {
+    border-color: var(--gold);
+    background: var(--gold-pale);
+    color: var(--ink);
+  }
+
+  /* ─── Input de chat ─── */
+  .chat-input-area {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    padding: 12px 16px 24px;
+    border-top: 1px solid var(--border);
+    background: #fff;
+    flex-shrink: 0;
+  }
+
+  .chat-input {
+    flex: 1;
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: 10px 16px;
+    font-family: var(--sans);
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--cream);
+    resize: none;
+    outline: none;
+    min-height: 42px;
+    max-height: 120px;
+    line-height: 1.5;
+    transition: border-color 0.2s;
+  }
+
+  .chat-input:focus { border-color: var(--gold-light); }
+  .chat-input::placeholder { color: var(--ink-muted); }
+
+  .btn-send {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--ink);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    color: #fff;
+  }
+
+  .btn-send:hover { background: var(--gold); }
+  .btn-send:disabled { opacity: 0.4; cursor: not-allowed; }
+
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header>
+    <div class="logo">Verbo<span>Vivo</span></div>
+    <div class="date-chip" id="date-chip"></div>
+  </header>
+
+  <div class="section-label"><span>Palavra do dia</span></div>
+
+  <!-- Card principal do versículo -->
+  <div class="verse-card">
+    <div class="verse-theme-badge" id="verse-theme">Fé</div>
+    <p class="verse-text" id="verse-text">
+      "Porque Deus amou o mundo de tal maneira que deu o seu Filho unigênito, para que todo aquele que nele crê não pereça, mas tenha a vida eterna."
+    </p>
+    <span class="verse-ref" id="verse-ref">João 3:16</span>
+
+    <div class="verse-actions">
+      <!-- Favoritar -->
+      <button class="action-icon" id="btn-fav" onclick="toggleFav()" title="Favoritar">
+        ♡
+      </button>
+      <!-- Compartilhar -->
+      <button class="action-icon" onclick="compartilhar()" title="Compartilhar">
+        ↗
+      </button>
+      <div class="spacer"></div>
+      <!-- Orar -->
+      <button class="btn-pray" onclick="abrirOracao()">
+        🙏 Orar sobre isso
+      </button>
+    </div>
+  </div>
+
+  <!-- Escolher por tema -->
+  <div class="theme-section">
+    <p class="theme-title">Buscar por tema</p>
+    <div class="theme-grid">
+      <div class="theme-chip selected" onclick="selecionarTema(this, 'Fé')"><span class="icon">✨</span> Fé</div>
+      <div class="theme-chip" onclick="selecionarTema(this, 'Esperança')"><span class="icon">🌅</span> Esperança</div>
+      <div class="theme-chip" onclick="selecionarTema(this, 'Amor')"><span class="icon">❤️</span> Amor</div>
+      <div class="theme-chip" onclick="selecionarTema(this, 'Força')"><span class="icon">💪</span> Força</div>
+      <div class="theme-chip" onclick="selecionarTema(this, 'Paz')"><span class="icon">🕊️</span> Paz</div>
+      <div class="theme-chip" onclick="selecionarTema(this, 'Cura')"><span class="icon">🌿</span> Cura</div>
+    </div>
+  </div>
+
+  <!-- Banner Pastor IA -->
+  <div class="pastor-banner" onclick="abrirPastor()">
+    <div class="pastor-avatar">✝</div>
+    <div class="pastor-info">
+      <h3>Falar com o Pastor IA</h3>
+      <p>Tire suas dúvidas, peça aconselhamento ou reflita sobre a Palavra</p>
+    </div>
+    <div class="pastor-arrow">›</div>
+  </div>
+
+  <div class="nav-spacer"></div>
+</div>
+
+<!-- Nav inferior -->
+<nav class="bottom-nav">
+  <div class="nav-item active">
+    <span class="nav-icon">📖</span>
+    <span class="nav-label">Palavra</span>
+  </div>
+  <div class="nav-item">
+    <span class="nav-icon">🙏</span>
+    <span class="nav-label">Oração</span>
+  </div>
+  <div class="nav-item">
+    <span class="nav-icon">✝</span>
+    <span class="nav-label">Pastor</span>
+  </div>
+  <div class="nav-item">
+    <span class="nav-icon">♡</span>
+    <span class="nav-label">Salvos</span>
+  </div>
+</nav>
+
+<!-- Tela Pastor IA -->
+<div class="pastor-screen" id="pastor-screen">
+  <div class="pastor-header">
+    <button class="btn-back" onclick="fecharPastor()">‹</button>
+    <div class="pastor-header-info">
+      <h2>Pastor IA</h2>
+      <p>Aconselhamento pastoral · Bíblia · Oração</p>
+    </div>
+    <div class="pastor-header-avatar">✝</div>
+  </div>
+
+  <div class="chat-messages" id="chat-messages">
+    <div class="msg pastor">
+      <div class="msg-name">Pastor IA</div>
+      <div class="msg-bubble">Paz do Senhor! Estou aqui para caminhar com você na Palavra. Pode me fazer perguntas sobre a Bíblia, pedir aconselhamento, ou simplesmente compartilhar o que está no seu coração. Como posso ajudá-lo hoje?</div>
+    </div>
+  </div>
+
+  <div class="suggestions" id="suggestions">
+    <div class="suggestion-chip" onclick="enviarSugestao(this)">Estou ansioso, o que a Bíblia diz?</div>
+    <div class="suggestion-chip" onclick="enviarSugestao(this)">Me explique João 3:16</div>
+    <div class="suggestion-chip" onclick="enviarSugestao(this)">Como orar corretamente?</div>
+    <div class="suggestion-chip" onclick="enviarSugestao(this)">Preciso de um versículo de força</div>
+    <div class="suggestion-chip" onclick="enviarSugestao(this)">O que é a graça de Deus?</div>
+  </div>
+
+  <div class="chat-input-area">
+    <textarea class="chat-input" id="chat-input" placeholder="Escreva sua mensagem..." rows="1"
+      onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+    <button class="btn-send" id="btn-send" onclick="enviarMensagem()">↑</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Modal de Oração -->
+<div class="modal-overlay" id="modal-overlay" onclick="fecharOracao(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h2>Uma oração para você</h2>
+    <p class="verse-mini" id="modal-ref-text"></p>
+    <div class="prayer-text" id="prayer-text"></div>
+    <button class="btn-amen" onclick="fecharOracao(null)">Amém 🙏</button>
+  </div>
+</div>
+
+<script>
+// ─── Data ───
+const dias = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+const hoje = new Date();
+document.getElementById('date-chip').textContent =
+  `${dias[hoje.getDay()]}, ${hoje.getDate()} ${meses[hoje.getMonth()]}`;
+
+// ─── Banco de versículos por tema ───
+const versiculos = {
+  'Fé': [
+    { texto: '"Porque Deus amou o mundo de tal maneira que deu o seu Filho unigênito, para que todo aquele que nele crê não pereça, mas tenha a vida eterna."', ref: 'João 3:16' },
+    { texto: '"A fé é a certeza daquilo que esperamos e a prova das coisas que não vemos."', ref: 'Hebreus 11:1' },
+  ],
+  'Esperança': [
+    { texto: '"Porque sou eu que conheço os planos que tenho para vocês, diz o Senhor, planos de fazê-los prosperar e não de causar dano, planos de dar a vocês esperança e um futuro."', ref: 'Jeremias 29:11' },
+    { texto: '"Aguarda o Senhor; sê forte, e ele fortalecerá o teu coração."', ref: 'Salmos 27:14' },
+  ],
+  'Amor': [
+    { texto: '"O amor é paciente, o amor é bondoso. Não inveja, não se vangloria, não se orgulha."', ref: '1 Coríntios 13:4' },
+    { texto: '"Nisto conhecemos o amor: Jesus Cristo deu sua vida por nós."', ref: '1 João 3:16' },
+  ],
+  'Força': [
+    { texto: '"Tudo posso naquele que me fortalece."', ref: 'Filipenses 4:13' },
+    { texto: '"O Senhor é a minha força e o meu escudo; nele o meu coração confia."', ref: 'Salmos 28:7' },
+  ],
+  'Paz': [
+    { texto: '"Deixo-lhes a paz; a minha paz lhes dou. Não a dou como o mundo a dá. Não se turbe o coração de vocês, nem tenham medo."', ref: 'João 14:27' },
+    { texto: '"E a paz de Deus, que excede todo o entendimento, guardará os seus corações e as suas mentes em Cristo Jesus."', ref: 'Filipenses 4:7' },
+  ],
+  'Cura': [
+    { texto: '"Ele cura os de coração partido e sara as suas feridas."', ref: 'Salmos 147:3' },
+    { texto: '"Mas ele foi traspassado pelas nossas transgressões e esmagado pelas nossas iniquidades; o castigo que nos traz a paz estava sobre ele, e pelas suas feridas fomos sarados."', ref: 'Isaías 53:5' },
+  ],
+};
+
+const oracoes = {
+  'Fé':       'Senhor, que a nossa fé seja como a do grão de mostarda — pequena, mas capaz de mover montanhas. Que em cada momento de dúvida, possamos lembrar que Tu és maior do que qualquer tempestade.',
+  'Esperança':'Pai, renova em nossos corações a esperança que não envergonha. Que os Teus planos perfeitos prevaleçam sobre os nossos medos, e que possamos caminhar confiantes no Teu amor.',
+  'Amor':     'Deus, que o Teu amor seja derramado em nossos corações. Ensina-nos a amar como Tu nos amaste — sem condições, sem medidas, com graça e verdade.',
+  'Força':    'Senhor, quando as forças falham, que possamos encontrar em Ti o sustento que precisamos. Que a nossa fraqueza seja o lugar onde a Tua força se manifesta com poder.',
+  'Paz':      'Pai, que a paz que excede todo entendimento guarde nossos corações. Que possamos descansar em Ti, sabendo que o mundo está nas Tuas mãos.',
+  'Cura':     'Senhor, que o Teu toque restaurador alcance cada ferida — do corpo e da alma. Tu és o médico perfeito, e confiamos na Tua graça que cura e renova.',
+};
+
+let temaAtual = 'Fé';
+let favoritado = false;
+
+// ─── Versículo do dia (fixo por data) ───
+function versiculoDoDia(tema) {
+  const lista = versiculos[tema] || versiculos['Fé'];
+  const idx = hoje.getDate() % lista.length;
+  return lista[idx];
+}
+
+// ─── Selecionar tema ───
+function selecionarTema(el, tema) {
+  document.querySelectorAll('.theme-chip').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  temaAtual = tema;
+  const v = versiculoDoDia(tema);
+  // Animação de troca
+  const card = document.querySelector('.verse-card');
+  card.style.opacity = '0';
+  card.style.transform = 'translateY(8px)';
+  setTimeout(() => {
+    document.getElementById('verse-text').textContent = v.texto;
+    document.getElementById('verse-ref').textContent = v.ref;
+    document.getElementById('verse-theme').textContent = tema;
+    favoritado = false;
+    document.getElementById('btn-fav').textContent = '♡';
+    document.getElementById('btn-fav').classList.remove('active');
+    card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+    card.style.opacity = '1';
+    card.style.transform = 'translateY(0)';
+  }, 180);
+}
+
+// ─── Favoritar ───
+function toggleFav() {
+  favoritado = !favoritado;
+  const btn = document.getElementById('btn-fav');
+  btn.textContent = favoritado ? '♥' : '♡';
+  btn.classList.toggle('active', favoritado);
+  mostrarToast(favoritado ? 'Versículo salvo nos favoritos ♥' : 'Removido dos favoritos');
+}
+
+// ─── Compartilhar ───
+function compartilhar() {
+  const v = versiculoDoDia(temaAtual);
+  const texto = `${v.texto}\n— ${v.ref}\n\nCompartilhado pelo app Verbo Vivo 🙏`;
+  if (navigator.share) {
+    navigator.share({ text: texto }).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(texto).then(() => {
+      mostrarToast('Versículo copiado para compartilhar!');
+    });
+  }
+}
+
+// ─── Toast ───
+function mostrarToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ─── Modal de Oração ───
+function abrirOracao() {
+  const v = versiculoDoDia(temaAtual);
+  document.getElementById('modal-ref-text').textContent = v.ref + ' · Tema: ' + temaAtual;
+  document.getElementById('prayer-text').textContent = oracoes[temaAtual] || oracoes['Fé'];
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function fecharOracao(e) {
+  if (e === null || e.target === document.getElementById('modal-overlay')) {
+    document.getElementById('modal-overlay').classList.remove('open');
+  }
+}
+
+// ─── Pastor IA ───
+const historicoChat = [];
+
+function abrirPastor() {
+  document.getElementById('pastor-screen').classList.add('open');
+  document.getElementById('chat-input').focus();
+}
+
+function fecharPastor() {
+  document.getElementById('pastor-screen').classList.remove('open');
+}
+
+function enviarSugestao(el) {
+  const texto = el.textContent;
+  document.getElementById('chat-input').value = texto;
+  // Esconde sugestões após usar
+  document.getElementById('suggestions').style.display = 'none';
+  enviarMensagem();
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    enviarMensagem();
+  }
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+function adicionarMensagem(role, texto) {
+  const container = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = `msg ${role === 'user' ? 'user' : 'pastor'}`;
+  div.innerHTML = `
+    <div class="msg-name">${role === 'user' ? 'Você' : 'Pastor IA'}</div>
+    <div class="msg-bubble">${texto.replace(/\n/g, '<br>')}</div>
+  `;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+  return div;
+}
+
+function mostrarDigitando() {
+  const container = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'msg pastor';
+  div.id = 'typing-msg';
+  div.innerHTML = `
+    <div class="msg-name">Pastor IA</div>
+    <div class="typing-indicator">
+      <div class="typing-dot"></div>
+      <div class="typing-dot"></div>
+      <div class="typing-dot"></div>
+    </div>
+  `;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function removerDigitando() {
+  const el = document.getElementById('typing-msg');
+  if (el) el.remove();
+}
+
+async function enviarMensagem() {
+  const input = document.getElementById('chat-input');
+  const texto = input.value.trim();
+  if (!texto) return;
+
+  // Esconde sugestões na primeira mensagem
+  document.getElementById('suggestions').style.display = 'none';
+
+  // Adiciona mensagem do usuário
+  adicionarMensagem('user', texto);
+  historicoChat.push({ role: 'user', content: texto });
+  input.value = '';
+  input.style.height = 'auto';
+
+  // Desabilita envio
+  const btnSend = document.getElementById('btn-send');
+  btnSend.disabled = true;
+  mostrarDigitando();
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: `Você é um pastor cristão sábio, amoroso e experiente chamado "Pastor IA". Seu papel é:
+- Oferecer aconselhamento pastoral baseado na Bíblia (versão NVI ou ARA)
+- Citar versículos bíblicos relevantes quando apropriado, sempre com referência (ex: João 3:16)
+- Responder com empatia, calor humano e sabedoria cristã
+- Usar linguagem acessível, calorosa e pastoral — não formal demais
+- Quando perguntado sobre um versículo, explicar o contexto e o significado espiritual
+- Oferecer oração quando a pessoa estiver passando por dificuldades
+- Ser sempre encorajador, nunca julgador
+
+Responda sempre em português do Brasil. Seja conciso mas completo — respostas de 3 a 6 parágrafos curtos. Use quebras de linha para separar os parágrafos.`,
+        messages: historicoChat
+      })
+    });
+
+    const data = await response.json();
+    removerDigitando();
+
+    if (data.content && data.content[0]) {
+      const resposta = data.content[0].text;
+      historicoChat.push({ role: 'assistant', content: resposta });
+      adicionarMensagem('pastor', resposta);
+    } else {
+      adicionarMensagem('pastor', 'Desculpe, não consegui me conectar agora. Por favor, tente novamente. 🙏');
+    }
+  } catch (err) {
+    removerDigitando();
+    adicionarMensagem('pastor', 'Houve um problema na conexão. Verifique sua internet e tente novamente. 🙏');
+  }
+
+  btnSend.disabled = false;
+  document.getElementById('chat-messages').scrollTop = 9999;
+}
+</script>
+</body>
+</html>
